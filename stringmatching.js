@@ -92,3 +92,18 @@ const kmpMatching = (text, pattern) => {
   }
   return -1;
 }
+
+// Brute Force
+const bruteForce = (text, pattern) => {
+    const n = text.length
+    const m = pattern.length
+    let j
+    for (let i = 0; i <= (n - m); i++) {
+        j = 0
+        while (j < m && (text.charAt(i+j) == pattern.charAt(j))) {
+            j++
+        }
+        if (j == m) return i
+    }
+    return -1
+} 

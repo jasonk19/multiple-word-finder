@@ -1,0 +1,72 @@
+function kmp(text, pattern : string) -> int
+  int n = length(text)
+  int m = length(pattern)
+
+  int fail[] = computeFail(pattern)
+
+  int i = 0
+  int j = 0
+
+  while (i < n) {
+    if (char in pattern at j == char in text at i) {
+      if (j == m - 1) {
+        return i - m + 1
+      }
+      i++
+      j++
+    }
+    else if (j > 0) {
+      j = fail[j - 1]
+    }
+    else {
+      i++
+    }
+  }
+  # no match
+  return -1
+
+function bruteForce(text, pattern: string) -> int
+  int n = length(text)
+  int m = length(pattern)
+  int j
+
+  iterate from i = 0 until (n - m) {
+    j = 0
+    while (j < m and (char in text at (i+j) == char in pattern at j)) {
+      j++
+    }
+    if (j == m) {
+      return i
+    }
+  }
+  # no match
+  return -1
+
+function boyerMoore(text, pattern : string) -> int
+  int last[] = buildLast(pattern) # Fungsi Last Occurrence
+  int n = length(text)
+  int m = length(pattern)
+  int i = m - 1
+
+  if (i > m - 1) {
+    # tidak ada kecocokan jika pattern lebih besar dari text
+    return -1
+  }
+
+  int j = m - 1
+  do {
+    if (char in pattern at j == char in pattern at i) {
+      if (j == 0) {
+        return i # cocok
+      } else {
+        i--
+        j--
+      }
+    } else {
+      int lo = last[char in text at i]
+      i = i + m - min(j, 1 + lo)
+      j = m - 1
+    }
+  } while (i <= n - 1)
+
+  return -1

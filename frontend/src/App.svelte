@@ -49,7 +49,7 @@
 		width: 50%;
 		background: #ffffff;
 		border-radius: 10px;
-		padding: 13px;
+		padding: 20px;
 	}
 
 	h1 {
