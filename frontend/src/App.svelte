@@ -1,4 +1,8 @@
 <script>
+	import BruteForce from "./lib/bruteforce";
+	import KMP from "./lib/kmp";
+	import BM from "./lib/bm";
+
 	import Result from "./components/Result.svelte";
 
 	let firstText = '',
@@ -7,12 +11,38 @@
 	let bftime = '',
 		kmptime = '',
 		bmtime = '';
+
+	let bfres = '',
+		kmpres = '',
+		bmres = '';
 	
 	$: resultExist = bftime !== '' && kmptime !== '' && bmtime !== '';
 
+	const roundToTwo = (num) => {
+    return +(Math.round(num + "e+2")  + "e-2");
+	}
+
 	const submit = () => {
-		console.log(firstText)
-		console.log(secondText)
+		const bruteforce = new BruteForce(firstText, secondText)
+		const kmp = new KMP(firstText, secondText)
+		const bm = new BM(firstText, secondText)
+		let start, end;
+
+		start = performance.now()
+		bfres = bruteforce.solve()
+		end = performance.now()
+		bftime = roundToTwo(end - start)
+
+		start = performance.now()
+		kmpres = kmp.solve()
+		end = performance.now()
+		kmptime = roundToTwo(end - start)
+
+		start = performance.now()
+		bmres = bm.solve()
+		end = performance.now()
+		bmtime = roundToTwo(end - start)
+
 	};
 
 </script>
@@ -27,9 +57,9 @@
 		<div class="result">
 			<button on:click={submit}>Submit</button>
 			{#if resultExist}
-				<Result algo="Brute Force" time={bftime} />
-				<Result algo="KMP" time={kmptime} />
-				<Result algo="BM" time={bmtime} />
+				<Result algo="Brute Force" time={bftime} result={bfres} />
+				<Result algo="KMP" time={kmptime} result={kmpres} />
+				<Result algo="BM" time={bmtime} result={bmres} />
 			{/if}
 		</div>
 	</div>
