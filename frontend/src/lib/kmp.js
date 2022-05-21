@@ -5,7 +5,16 @@ class KMP {
     }
 
     convert(pattern) {
-        const newPattern = pattern.split(" ")
+        return pattern.split(" ")
+    }
+    
+    convertUnique(pattern) {
+        let newPattern = []
+        pattern.split(" ").forEach(function(e, i) {
+            if (newPattern.indexOf(e) == -1) {
+                newPattern.push(e)
+            }
+        })
         return newPattern
     }
 
@@ -31,7 +40,7 @@ class KMP {
         }
       
         return fail
-      }
+    }
       
     kmpMatching(text, pattern) {
         const n = text.length
@@ -41,11 +50,13 @@ class KMP {
       
         let i = 0;
         let j = 0;
+
+        let count = 0
       
         while (i < n) {
             if (pattern.charAt(j) === text.charAt(i)) {
                 if (j === m - 1) {
-                    return i - m + 1
+                    count++
                 }
                 i++
                 j++
@@ -55,17 +66,17 @@ class KMP {
                 i++
             }
         }
-        return -1;
+        return count;
     }
 
     solve() {
-        const patterns = this.convert(this.pattern)
+        const patterns = this.convertUnique(this.pattern)
         const textLength = this.convert(this.text).length
         let countExist = 0
 
         for (let i = 0; i < patterns.length; i++) {
             let result = this.kmpMatching(this.text, patterns[i])
-            if (result !== -1) countExist++
+            if (result !== -1) countExist += result
         }
         return Math.round(100 * countExist / textLength)
     }

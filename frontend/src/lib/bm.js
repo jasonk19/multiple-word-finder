@@ -5,7 +5,16 @@ class BM {
     }
 
     convert(pattern) {
-        const newPattern = pattern.split(" ")
+        return pattern.split(" ")
+    }
+    
+    convertUnique(pattern) {
+        let newPattern = []
+        pattern.split(" ").forEach(function(e, i) {
+            if (newPattern.indexOf(e) == -1) {
+                newPattern.push(e)
+            }
+        })
         return newPattern
     }
     
@@ -28,16 +37,24 @@ class BM {
         const n = text.length;
         const m = pattern.length;
         let i = m - 1;
+
+        let count = 0
       
         if (i > n - 1) {
-            return -1;
+            return count;
         }
       
         let j = m - 1;
         while (i <= n - 1) {
             if (pattern.charAt(j) === text.charAt(i)) {
                 if (j === 0) {
-                    return i;
+                    count++
+                    let lo = last[text.charAt(i)];
+                    if (lo == undefined) {
+                        lo = 0
+                    }
+                    i = i + m - Math.min(j, 1 + lo);
+                    j = m - 1;
                 } else {
                     i--;
                     j--;
@@ -52,17 +69,17 @@ class BM {
             }
         }
       
-        return -1;
+        return count;
     }
 
     solve() {
-        const patterns = this.convert(this.pattern)
+        const patterns = this.convertUnique(this.pattern)
         const textLength = this.convert(this.text).length
         let countExist = 0
 
         for (let i = 0; i < patterns.length; i++) {
             let result = this.bmMatch(this.text, patterns[i])
-            if (result !== -1) countExist++
+            if (result !== -1) countExist += result
         }
         return Math.round(100 * countExist / textLength)
     }
