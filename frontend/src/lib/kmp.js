@@ -43,6 +43,7 @@ class KMP {
     }
       
     kmpMatching(text, pattern) {
+        let pos = []
         const n = text.length
         const m = pattern.length
       
@@ -50,13 +51,11 @@ class KMP {
       
         let i = 0;
         let j = 0;
-
-        let count = 0
       
         while (i < n) {
             if (pattern.charAt(j) === text.charAt(i)) {
                 if (j === m - 1) {
-                    count++
+                    pos.push(i - m + 1);
                 }
                 i++
                 j++
@@ -66,19 +65,18 @@ class KMP {
                 i++
             }
         }
-        return count;
+        return pos;
     }
 
     solve() {
         const patterns = this.convertUnique(this.pattern)
-        const textLength = this.convert(this.text).length
-        let countExist = 0
+        let resMap = new Map()
 
         for (let i = 0; i < patterns.length; i++) {
             let result = this.kmpMatching(this.text, patterns[i])
-            if (result !== -1) countExist += result
+            if (result.length != 0) resMap.set(patterns[i], result) 
         }
-        return Math.round(100 * countExist / textLength)
+        return resMap
     }
 }
 

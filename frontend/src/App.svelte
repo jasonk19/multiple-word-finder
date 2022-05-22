@@ -5,16 +5,15 @@
 
 	import Result from "./components/Result.svelte";
 
-	let firstText = '',
-		secondText = '';
+	let inputText = '';
 
 	let bftime = '',
 		kmptime = '',
 		bmtime = '';
 
-	let bfres = '',
-		kmpres = '',
-		bmres = '';
+	let bfres, kmpres, bmres;
+
+	let result = {};
 	
 	$: resultExist = bftime !== '' && kmptime !== '' && bmtime !== '';
 
@@ -23,9 +22,12 @@
 	}
 
 	const submit = () => {
-		const bruteforce = new BruteForce(firstText, secondText)
-		const kmp = new KMP(firstText, secondText)
-		const bm = new BM(firstText, secondText)
+		let text = inputText;
+		let referenceText = document.querySelector(".referenceText");
+		let innerHTML = referenceText.innerHTML.replace( /(<([^>]+)>)/ig, '');
+		const bruteforce = new BruteForce(text, innerHTML)
+		const kmp = new KMP(text, innerHTML)
+		const bm = new BM(text, innerHTML)
 		let start, end;
 
 		start = performance.now()
@@ -43,23 +45,29 @@
 		end = performance.now()
 		bmtime = roundToTwo(end - start)
 
+		for (const [key, value] of kmpres.entries()) {
+			result[key] = value.join(', ')
+		}
+
 	};
 
 </script>
 
 <div class="container">
 	<div class="card">
-		<h1>Plagiarisme Checker</h1>
+		<h1>Multiple Word Finder</h1>
 		<form class="input">
-			<textarea bind:value={firstText} placeholder="Text to check"></textarea>
-			<textarea bind:value={secondText} placeholder="Referenced Text"></textarea>
+			<textarea bind:value={inputText} placeholder="Text to check"></textarea>
+			<div class="referenceText">
+				Lorem, ipsum dolor sit amet consectetur adipisicing elit. Praesentium soluta, odio voluptatem dolorum ullam, eum rem aperiam reiciendis neque labore consequatur a quas atque officiis vero sit iure modi quia. Iusto aliquam hic, quia expedita amet rerum reiciendis vitae modi ipsum tenetur voluptas incidunt possimus recusandae nemo ad aut eum. Quasi corporis voluptatibus fuga debitis?
+			</div>
 		</form>
 		<div class="result">
 			<button on:click={submit}>Submit</button>
 			{#if resultExist}
-				<Result algo="Brute Force" time={bftime} result={bfres} />
-				<Result algo="KMP" time={kmptime} result={kmpres} />
-				<Result algo="BM" time={bmtime} result={bmres} />
+				<Result algo="Brute Force" time={bftime} />
+				<Result algo="KMP" time={kmptime} />
+				<Result algo="BM" time={bmtime} />
 			{/if}
 		</div>
 	</div>
@@ -89,7 +97,7 @@
 	h1::after {
 		content: '';
 		position: absolute;
-		width: 10em;
+		width: 11em;
 		height: 2px;
 		background-color: black;
 		bottom: -5px;
@@ -105,12 +113,16 @@
 		gap: 17px;
 	}
 
-	textarea {
+	textarea, .referenceText {
 		resize: none;
 		padding: 5px;
 		height: 13em;
 		width: 100%;
 		font-size: 16px;
+	}
+
+	.referenceText {
+		text-align: justify;
 	}
 
 	.result {

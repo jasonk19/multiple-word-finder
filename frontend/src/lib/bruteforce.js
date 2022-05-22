@@ -22,27 +22,26 @@ class BruteForce {
       const n = text.length
       const m = pattern.length
       let j
-      let count = 0
+      let pos = []
       for (let i = 0; i <= (n - m); i++) {
           j = 0
           while (j < m && (text.charAt(i+j) == pattern.charAt(j))) {
               j++
           }
-          if (j == m) count++
+          if (j == m) pos.push(i)
       }
-      return count
+      return pos
   } 
 
   solve() {
       const patterns = this.convertUnique(this.pattern)
-      const textLength = this.convert(this.text).length
-      let countExist = 0
+      let resMap = new Map()
 
       for (let i = 0; i < patterns.length; i++) {
           let result = this.bruteForce(this.text, patterns[i])
-          if (result !== -1) countExist += result
+          if (result.length != 0) resMap.set(patterns[i], result)
       }
-      return Math.round(100 * countExist / textLength)
+      return resMap
   }
 }
 

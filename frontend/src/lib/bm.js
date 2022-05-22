@@ -38,17 +38,17 @@ class BM {
         const m = pattern.length;
         let i = m - 1;
 
-        let count = 0
+        let pos = []
       
         if (i > n - 1) {
-            return count;
+            return pos;
         }
       
         let j = m - 1;
         while (i <= n - 1) {
             if (pattern.charAt(j) === text.charAt(i)) {
                 if (j === 0) {
-                    count++
+                    pos.push(i)
                     let lo = last[text.charAt(i)];
                     if (lo == undefined) {
                         lo = 0
@@ -69,19 +69,18 @@ class BM {
             }
         }
       
-        return count;
+        return pos;
     }
 
     solve() {
         const patterns = this.convertUnique(this.pattern)
-        const textLength = this.convert(this.text).length
-        let countExist = 0
-
+        let resMap = new Map()
+  
         for (let i = 0; i < patterns.length; i++) {
             let result = this.bmMatch(this.text, patterns[i])
-            if (result !== -1) countExist += result
+            if (result.length != 0) resMap.set(patterns[i], result)
         }
-        return Math.round(100 * countExist / textLength)
+        return resMap
     }
 }
 
