@@ -4,8 +4,10 @@
 	import BM from "./lib/bm";
 
 	import Result from "./components/Result.svelte";
+	import SearchResult from "./components/SearchResult.svelte";
 
-	let inputText = '';
+	let inputText = '',
+		referenceText = '';
 
 	let bftime = '',
 		kmptime = '',
@@ -13,7 +15,7 @@
 
 	let bfres, kmpres, bmres;
 
-	let result = {};
+	let result = [];
 	
 	$: resultExist = bftime !== '' && kmptime !== '' && bmtime !== '';
 
@@ -22,12 +24,9 @@
 	}
 
 	const submit = () => {
-		let text = inputText;
-		let referenceText = document.querySelector(".referenceText");
-		let innerHTML = referenceText.innerHTML.replace( /(<([^>]+)>)/ig, '');
-		const bruteforce = new BruteForce(text, innerHTML)
-		const kmp = new KMP(text, innerHTML)
-		const bm = new BM(text, innerHTML)
+		const bruteforce = new BruteForce(inputText, referenceText)
+		const kmp = new KMP(inputText, referenceText)
+		const bm = new BM(inputText, referenceText)
 		let start, end;
 
 		start = performance.now()
@@ -46,9 +45,13 @@
 		bmtime = roundToTwo(end - start)
 
 		for (const [key, value] of kmpres.entries()) {
-			result[key] = value.join(', ')
+			result.push({
+				key: key,
+				loc: value.join(', ')
+			})
 		}
 
+		console.log(result)
 	};
 
 </script>
@@ -57,10 +60,8 @@
 	<div class="card">
 		<h1>Multiple Word Finder</h1>
 		<form class="input">
-			<textarea bind:value={inputText} placeholder="Text to check"></textarea>
-			<div class="referenceText">
-				Lorem, ipsum dolor sit amet consectetur adipisicing elit. Praesentium soluta, odio voluptatem dolorum ullam, eum rem aperiam reiciendis neque labore consequatur a quas atque officiis vero sit iure modi quia. Iusto aliquam hic, quia expedita amet rerum reiciendis vitae modi ipsum tenetur voluptas incidunt possimus recusandae nemo ad aut eum. Quasi corporis voluptatibus fuga debitis?
-			</div>
+			<textarea bind:value={inputText} placeholder="Word to search"></textarea>
+			<textarea class="referenceText" bind:value={referenceText} placeholder="Reference Text"></textarea>
 		</form>
 		<div class="result">
 			<button on:click={submit}>Submit</button>
@@ -71,16 +72,20 @@
 			{/if}
 		</div>
 	</div>
+	{#if result.length > 0}
+		<SearchResult bind:result />
+	{/if}
 </div>
+
 
 <style>
 	.container {
 		display: flex;
-		justify-content: center;
+		flex-direction: column;
+		gap: 15px;
 		align-items: center;
-		height: 100vh;
+		padding: 2em 0;
 		width: 100vw;
-		background: #14173b;
 	}
 
 	.card {
@@ -106,23 +111,22 @@
 	}
 
 	.input {
-		margin-top: 1em;
+		margin-top: 1.5em;
 		display: flex;
+		flex-direction: column;
 		width: 100%;
 		justify-content: center;
-		gap: 17px;
+		gap: 10px;
 	}
 
-	textarea, .referenceText {
+	textarea {
 		resize: none;
 		padding: 5px;
-		height: 13em;
-		width: 100%;
 		font-size: 16px;
 	}
 
 	.referenceText {
-		text-align: justify;
+		height: 20em;
 	}
 
 	.result {
